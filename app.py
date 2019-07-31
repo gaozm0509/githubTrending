@@ -102,4 +102,4 @@ api.add_resource(Trending, '/')
 
 if __name__ == '__main__':
     app.run(host='127.0.0.1',port = '5000',ssl_context=(
-        os.environ['HOME']+'/crt/server.crt', os.environ['HOME']+'/crt/server.key'))
+        os.environ['HOME']+'/crt/server.pem', os.environ['HOME']+'/crt/server.key'))
