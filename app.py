@@ -28,11 +28,13 @@ def getRepoDevelopers(since):
         dev_dic['avatar'] = img.attrs['src']
 
         full_name = devArticle.find('h1', {'class': 'lh-condensed'})
-        dev_dic['full_name'] = full_name.a.text
-
+        if not full_name is None :
+            dev_dic['full_name'] = full_name.a.text
+        
         name = devArticle.find('p', {'class': 'mb-1'})
-        dev_dic['name'] = name.a.text
-
+        if not name is None :
+            dev_dic['name'] = name.a.text
+        
         app = devArticle.find('a', {'class': 'css-truncate-target'})
         dev_dic['app'] = app.text.replace(
             '\n', '').replace('\r', '').replace(' ', '')
