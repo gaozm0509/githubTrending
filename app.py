@@ -16,7 +16,7 @@ from flask import jsonify
 def getRepoDevelopers(since):
     url = 'https://github.com/trending/developers'
     if not since is None:
-        url = url + 'since=' + since
+        url = url + '?since=' + since
     response = requests.get(url).text
     soup = BeautifulSoup(response, 'lxml')
     devArticles = soup.find_all('article', {'class': 'd-flex'})
@@ -60,4 +60,4 @@ class Trending(flask_restful.Resource):
 
 api.add_resource(Trending, '/')
 # if __name__ == '__main__':
-    # app.run(host='lo', port=5000)
+    # app.run(host='0.0.0.0', port=5000)
