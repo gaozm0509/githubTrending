@@ -59,5 +59,5 @@ class Trending(flask_restful.Resource):
 
 
 api.add_resource(Trending, '/')
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
+# if __name__ == '__main__':
+    # app.run(host='lo', port=5000)
