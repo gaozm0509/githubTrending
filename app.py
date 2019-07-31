@@ -101,5 +101,5 @@ class Trending(flask_restful.Resource):
 api.add_resource(Trending, '/')
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0',port = '80',ssl_context=(
+    app.run(host='0.0.0.0',port = '443',ssl_context=(
         os.environ['HOME']+'/crt/server.pem', os.environ['HOME']+'/crt/server.key'))
