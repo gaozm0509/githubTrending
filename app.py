@@ -47,7 +47,7 @@ def getRepoDevelopers(since):
         app_des = dev_article.find('div', {'class': 'f6 text-gray mt-1'})
         if not app_des is None:
             dev_dic['app_des'] = app_des.text.replace(
-                '\n', '').replace('\r', '')
+                '\n', '').replace('\r', '').strip()
 
         devs.append(dev_dic)
 
