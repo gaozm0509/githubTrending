@@ -2,3 +2,9 @@
 - cd 到目录下，终端运行
 
         flask run --host=0.0.0.0
+
+## api
+
+- repo https://pro.gzmwebsite.info/api/repo
+
+- develpoer https://pro.gzmwebsite.info/api/dev
