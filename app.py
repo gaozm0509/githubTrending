@@ -133,7 +133,7 @@ class Dev(flask_restful.Resource):
         try:
             since = request.args.get('since')
             data = getRepoDevelopers(since)
-            return jsonify({'data': data})
+            return jsonify(data)
         except Exception as e:
             return e
 
@@ -143,7 +143,7 @@ class Repo(flask_restful.Resource):
         try:
             since = request.args.get('since')
             data = getRepo(since)
-            return jsonify({'data': data})
+            return jsonify(data)
         except Exception as e:
             return e
 
