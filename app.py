@@ -18,7 +18,7 @@ def replaces(str):
 # app_des applicaion 简介
 
 
-def getRepoDevelopers(since):
+def getRepoDevelopers(since=None):
     url = 'https://github.com/trending/developers'
     if not since is None:
         url = url + '?since=' + since
@@ -62,44 +62,98 @@ def getRepoDevelopers(since):
 #       repo: "dsgiitr/d2l-pytorch"
 #       repo_link: "https://github.com/dsgiitr/d2l-pytorch"
 #       stars: "301"
-# def getRepo(since):
-#     url = 'https://github.com/trending/trending'
+
+# async def getRequest(url, since=None):
+#     url = 'https://github.com/trending'
 #     if not since is None:
 #         url = url + '?since=' + since
-
-#     response = requests.get(url).text
-#     print(response)
-#     soup = BeautifulSoup(response, 'lxml')
-#     articles = soup.find_all('article', {'class': 'Box-row'})
-#     print(articles)
-#     trendings = []
-#     for article in articles:
-#         dic = {}
-#         repo = article.find('h1', {'class': 'lh-condensed'})
-#         print(repo)
-#         if not repo is None:
-#             repo_a = repo.a
-#             if not repo_a is not None:
-#                 repo_text = replaces(repo_a.span.text) + replaces(repo_a.text)
-#                 dic['repo'] = repo_text
-#                 print(repo_text)
+#     response = await request(url)
+#     return response.text
 
 
-# getRepo(None)
+def getRepo(since=None):
+    url = 'https://github.com/trending'
+    if not since is None:
+        url = url + '?since=' + since
+    response = requests.get(url).text
+    # response = await getRequest(url,since)
+    soup = BeautifulSoup(response, 'html.parser')
+    articles = soup.find_all('article', {'class': 'Box-row'})
+    trendings = []
+    for article in articles:
+        dic = {}
+        repo = article.find('h1', {'class': 'lh-condensed'})
+        if not repo is None:
+            repo_a = repo.a
+            if not repo_a is None:
+                repo_text = replaces(repo_a.text)
+                dic['repo'] = repo_text
+
+        desc = article.find('p', {'class': 'col-9'})
+        if not desc is None:
+            dic['desc'] = desc.text.strip()
+
+        lang = article.find('span', {'itemprop': 'programmingLanguage'})
+        if not lang is None:
+            dic['lang'] = lang.text.strip()
+
+        lang_color = article.find('span', {'class': 'repo-language-color'})
+        if not lang_color is None:
+            dic['lang_color'] = lang_color.attrs['style'][-6:]
+
+        fork_starts = article.find_all('a', {'class': 'muted-link'})
+        if not fork_starts is None:
+            dic['stars'] = fork_starts[0].text.strip()
+            dic['forks'] = fork_starts[1].text.strip()
+
+        added_stars = article.find('span', {'class': 'float-sm-right'})
+        if not added_stars is None:
+            dic['added_stars'] = added_stars.text.strip()
+
+        bs_avatars = article.find_all('img', {'class': 'avatar'})
+        avatars = []
+        for bs_avatar in bs_avatars:
+            avatar = bs_avatar.attrs['src']
+            avatars.append(avatar)
+
+        dic['avatars'] = avatars
+        trendings.append(dic)
+
+    return trendings
+
+
+getRepo()
 
 app = Flask(__name__)
 api = flask_restful.Api(app)
 
 
-class Trending(flask_restful.Resource):
+class Dev(flask_restful.Resource):
     def get(self):
-        since = request.args.get('since')
-        data = jsonify(getRepoDevelopers(since))
-        return data
+        try:
+            since = request.args.get('since')
+            data = getRepoDevelopers(since)
+            return jsonify({'data': data})
+        except Exception as e:
+            return e
 
 
-api.add_resource(Trending, '/')
+class Repo(flask_restful.Resource):
+    def get(self):
+        try:
+            since = request.args.get('since')
+            data = getRepo(since)
+            return jsonify({'data': data})
+        except Exception as e:
+            return e
+
+
+api.add_resource(Dev, '/api/dev')
+api.add_resource(Repo, '/api/repo')
+
+# if __name__ == '__main__':
+#     app.run(host='0.0.0.0', port='5000')
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0',port = '443',ssl_context=(
+    app.run(host='0.0.0.0', port='443', ssl_context=(
         os.environ['HOME']+'/crt/server.pem', os.environ['HOME']+'/crt/server.key'))
