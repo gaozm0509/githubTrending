@@ -122,7 +122,16 @@ def getRepo(since=None):
     return trendings
 
 
-getRepo()
+def getLang():
+    url = 'https://github.com/trending'
+    response = requests.get(url).text
+    soup = BeautifulSoup(response, 'html.parser')
+    lang_spans = soup.find_all('span', {'class': 'select-menu-item-text'})
+    langs = []
+    for lang_span in lang_spans:
+        langs.append(lang_span.text.strip())
+    return langs[0:len(langs) - 3]
+
 
 app = Flask(__name__)
 api = flask_restful.Api(app)
@@ -148,8 +157,18 @@ class Repo(flask_restful.Resource):
             return e
 
 
+class Lang(flask_restful.Resource):
+    def get(self):
+        try:
+            data = getLang()
+            return jsonify(data)
+        except Exception as e:
+            return e
+
+
 api.add_resource(Dev, '/api/dev')
 api.add_resource(Repo, '/api/repo')
+api.add_resource(Lang, '/api/lang')
 
 # if __name__ == '__main__':
 #     app.run(host='0.0.0.0', port='5000')
