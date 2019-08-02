@@ -18,12 +18,14 @@ def replaces(str):
 # app_des applicaion 简介
 
 
-def getRepoDevelopers(since=None):
+def getRepoDevelopers(since=None, lang=None):
     url = 'https://github.com/trending/developers'
+    if not lang is None:
+        url = url + '/' + lang
     if not since is None:
         url = url + '?since=' + since
     response = requests.get(url).text
-    soup = BeautifulSoup(response, 'lxml')
+    soup = BeautifulSoup(response, 'html.parser')
     dev_articles = soup.find_all('article', {'class': 'd-flex'})
     devs = []
     for dev_article in dev_articles:
@@ -71,12 +73,14 @@ def getRepoDevelopers(since=None):
 #     return response.text
 
 
-def getRepo(since=None):
+
+def getRepo(since=None, lang=None):
     url = 'https://github.com/trending'
+    if not lang is None:
+        url = url + '/' + lang
     if not since is None:
         url = url + '?since=' + since
     response = requests.get(url).text
-    # response = await getRequest(url,since)
     soup = BeautifulSoup(response, 'html.parser')
     articles = soup.find_all('article', {'class': 'Box-row'})
     trendings = []
@@ -133,6 +137,7 @@ def getLang():
     return langs[0:len(langs) - 3]
 
 
+
 app = Flask(__name__)
 api = flask_restful.Api(app)
 
@@ -141,7 +146,8 @@ class Dev(flask_restful.Resource):
     def get(self):
         try:
             since = request.args.get('since')
-            data = getRepoDevelopers(since)
+            lang = request.args.get('lang')
+            data = getRepoDevelopers(since, lang)
             return jsonify(data)
         except Exception as e:
             return e
@@ -151,7 +157,8 @@ class Repo(flask_restful.Resource):
     def get(self):
         try:
             since = request.args.get('since')
-            data = getRepo(since)
+            lang = request.args.get('lang')
+            data = getRepo(since, lang)
             return jsonify(data)
         except Exception as e:
             return e
@@ -171,7 +178,7 @@ api.add_resource(Repo, '/api/repo')
 api.add_resource(Lang, '/api/lang')
 
 # if __name__ == '__main__':
-#     app.run(host='0.0.0.0', port='5000')
+#     app.run(host='0.0.0.0', port='5000',debug=True)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port='443', ssl_context=(
