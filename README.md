@@ -8,3 +8,5 @@
 - repo https://pro.gzmwebsite.info/api/repo
 
 - develpoer https://pro.gzmwebsite.info/api/dev
+
+- develpoer https://pro.gzmwebsite.info/api/lang
